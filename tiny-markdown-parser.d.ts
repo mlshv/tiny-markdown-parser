@@ -1,7 +1,6 @@
 interface BlockFunction {
   (text: string): string;
 }
-declare const block: BlockFunction;
 
 type InlineBlockFunction = (text?: string, dontInline?: boolean) => string;
 declare const inlineBlock: InlineBlockFunction;
@@ -14,4 +13,4 @@ interface ParseMarkdownFunction {
 }
 declare const parse: ParseMarkdownFunction;
 
-export { parse, block, inline, inlineBlock };
+export { parse, inline, inlineBlock };
