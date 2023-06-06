@@ -1,255 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>micro-down</title>
-  <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,400i,700" rel="stylesheet">
-  <style>
+  <head>
+    <meta charset="UTF-8" />
+    <title>tiny-markdown-parser</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-    html {
-      font-family: "Ubuntu", sans-serif;
-    }
+      body {
+        display: flex;
+        margin: 0;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+      }
 
-    body {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      display: flex;
-      flex-direction: row;
-      margin: 0;
-      max-height: 100vh;
-    }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin-top: 24px;
+        margin-bottom: 12px;
+        line-height: 1;
+      }
 
-    h1, h2, h3, h4, h5, h6 {
-      line-height: 1;
-    }
+      img {
+        max-width: 75%;
+        display: block;
+        margin: auto;
+      }
 
-    h2, h3, h4, h5, h6 {
-      margin-top: 50px;
-    }
+      #input {
+        width: 50%;
+        padding: 16px;
+        margin: 0;
+        border: none;
+        color: #fff;
+        background: #333;
+        font-size: 16px;
+        font-family: 'Courier New', Courier, monospace;
+        outline: none;
+      }
 
-    img {
-      max-width: 75%;
-      display: block;
-      margin: auto;
-    }
+      #result {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 50%;
+        height: 100vh;
+        padding: 1rem;
+        margin: 0;
+        overflow: auto;
+        scroll-behavior: smooth;
+      }
 
-    #input {
-      height: 100vh;
-      width: 50%;
-      resize: none;
-      padding: 0;
-      margin: 0;
-      border: none;
-    }
+      code {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9em;
+      }
 
-    #result {
-      float: left;
-      display: inline-block;
-      box-sizing: border-box;
-      width: 50%;
-      height: 100vh;
-      padding: 1rem;
-      margin: 0;
-      overflow: auto;
-      scroll-behavior: smooth;
-    }
+      blockquote {
+        padding: 12px 8px;
+        margin: 0;
+        background: #eee;
+        border-left: 3px solid #000;
+      }
 
-    .red {
-      color: red;
-    }
+      table {
+        border-spacing: 0;
+        border-collapse: collapse;
+      }
 
-    .gray {
-      background: #cccccc;
-    }
+      th,
+      td {
+        padding: 8px;
+        border: 1px solid #666;
+        background: #ffffff;
+      }
 
-    .logo {
-      max-width: 200px;
-      height: auto;
-    }
+      th:nth-child(odd) {
+        background: #eee;
+      }
 
-    th, td {
-      padding: 2px 15px 2px 2px;
-      border-bottom: 1px solid #666;
-      background: #ffffff;
-    }
+      td:nth-child(odd) {
+        background: #eee;
+      }
+    </style>
+    <script>
+      var tinyMarkdownParser=function(m){"use strict";const t=(n,r,a={})=>`<${n}${Object.entries(a).map(([e,c])=>c?` ${e}="${i(c)}"`:"").join("")}>${r}</${n}>`,y=(n="")=>n.replace(new RegExp("^"+(n.match(/^\s+/)||"")[0],"gm"),""),i=(n="")=>n.replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"),$=/(?:(^|\n)([+-]|\d+\.) +(.*(\n[ \t]+.*)*))+/g,u=n=>{const r=n.match(/^[+-]/m)?"ul":"ol";return n?t(r,n.replace(/(?:[+-]|\d+\.) +(.*)\n?(([ \t].*\n?)*)/g,(a,e,c)=>t("li",l(`${e}
+${y(c).replace($,u)}`)))):""},h=(n,r,a,e=c=>c)=>c=>t(n,e(c.replace(r,a))),f=n=>b(n,[/^(```)(.*)\n((.*\n)*?)\1/gm,(r,a,e,c)=>t("pre",t("code",i(c),e?{class:`language-${e.trim()}`}:{})),/(^>.*\n?)+/gm,h("blockquote",/^> ?(.*)$/gm,"$1",o),/((^|\n)\|.+)+/g,h("table",/^.*(\n\|---.*?)?$/gm,(r,a="")=>h("tr",/\|(-?)([^|]*)\1(\|$)?/gm,(e,c,g)=>t(c||a?"th":"td",l(g)))(r.slice(0,r.length-a.length))),$,u,/#\[([^\]]+?)]/g,t("a","",{name:"$1"}),/^(#+) +(.*)(?:$)/gm,(r,a,e)=>t("h"+a.length,l(e)),/^(===+|---+)(?=\s*$)/gm,"<hr>"],w),l=(n="",r)=>{const a=[],e=c=>c.replace(/\\(\d+)/g,(g,s)=>e(a[parseInt(s)-1]));return n=n.trim().replace(/`([^`]*)`/g,(c,g)=>"\\"+a.push(t("code",i(g)))).replace(/[!]?\[([!]?\[.*?\)|[^\]]*?)]\((.*?)( .*?)?\)|(\w+:\/\/[$\-.+!*'()\/,\w]+)/g,(c,g,s,d,p)=>p?r?c:"\\"+a.push(t("a",p,{href:p})):"\\"+a.push(c[0]=="!"?t("img","",{src:s,alt:g,title:d}):t("a",l(g,1),{href:s,title:d}))),e(r?n:o(n))},o=n=>b(n,[/([*_]{1,3})((.|\n)+?)\1/g,(r,a,e)=>(a=a.length,e=o(e),a>1&&(e=t("strong",e)),a%2&&(e=t("em",e)),e),/(~{1,3})((.|\n)+?)\1/g,(r,a,e)=>t([,"u","s","del"][a.length],o(e)),/  \n|\n  /g,"<br>"],o),b=(n,r,a)=>{for(let e=0;e<r.length;e+=2){const c=r[e].exec(n);if(c){const[g,...s]=c;return a(n.slice(0,c.index))+(typeof r[e+1]=="string"?r[e+1].replace(/\$(\d)/g,(d,p)=>s[p-1]):r[e+1].apply(null,c))+a(n.slice(c.index+g.length))}}return n},w=n=>{const r=n.replace(/[\r\v\b\f]/g,"").replace(/\\./g,e=>`&#${e.charCodeAt(1)};`);return(f(r)===r&&!r.match(/^[\s\n]*$/i)?l(r).replace(/((.|\n)+?)(\n\n+|$)/g,(e,c)=>t("p",c)):f(r)).replace(/&#(\d+);/g,(e,c)=>String.fromCharCode(+c))};return m.inline=o,m.inlineBlock=l,m.parse=w,Object.defineProperty(m,Symbol.toStringTag,{value:"Module"}),m}({});
+    </script>
+  </head>
+  <body>
+    <script>
+      const updateResult = function () {
+        document.getElementById('result').innerHTML = tinyMarkdownParser.parse(
+          document.getElementById('input').value
+        );
+      };
+    </script>
 
-    th:nth-child(odd) {
-      background: #ffF9ee;
-    }
+    <div id="result"></div>
 
-    td:nth-child(odd) {
-      background: #ffF9ee;
-    }
+    <textarea id="input" onkeyup="updateResult()">
+# <center>tiny-markdown-parser</center>
 
-    blockquote {
-      padding: 4px;
-      background: #ffffdd;
-      box-shadow: 2px 2px 4px #999999;
-      border: 1px solid #cccccc;
-    }
+**1.1kB** JavaScript markdown parser
 
-    .center {
-      text-align: center;
-    }
+[View on GitHub](https://github.com/mlshv/tiny-markdown-parser)
 
-    .navigation {
-      background-color: #D6EDFF;
-      padding: .1rem 1rem;
-    }
+## Support
 
-    .navigation a:hover {
-      background-color: #006FED;
-    }
-
-    .navigation a {
-      display: inline-block;
-      padding: .5rem 1rem;
-      background-color: #008DFE;
-      color: #FFFFFF;
-      text-decoration: none;
-    }
-  </style>
-  <script>
-    "use strict";var microdown=function(){function l(n,e,r){return"<"+n+(r?" "+Object.keys(r).map(function(n){return r[n]?n+'="'+(a(r[n])||"")+'"':""}).join(" "):"")+">"+e+"</"+n+">"}function c(n,e){return e=n.match(/^[+-]/m)?"ul":"ol",n?"<"+e+">"+n.replace(/(?:[+-]|\d+\.) +(.*)\n?(([ \t].*\n?)*)/g,function(n,e,r){return"<li>"+g(e+"\n"+(t=r||"").replace(new RegExp("^"+(t.match(/^\s+/)||"")[0],"gm"),"").replace(o,c))+"</li>";var t})+"</"+e+">":""}function e(r,t,u,c){return function(n,e){return n=n.replace(t,u),l(r,c?c(n):n)}}function t(n,u){return f(n,[/<!--((.|\n)*?)-->/g,"\x3c!--$1--\x3e",/^("""|```)(.*)\n((.*\n)*?)\1/gm,function(n,e,r,t){return'"""'===e?l("div",p(t,u),{class:r}):u&&u.preCode?l("pre",l("code",a(t),{class:r})):l("pre",a(t),{class:r})},/(^>.*\n?)+/gm,e("blockquote",/^> ?(.*)$/gm,"$1",r),/((^|\n)\|.+)+/g,e("table",/^.*(\n\|---.*?)?$/gm,function(n,t){return e("tr",/\|(-?)([^|]*)\1(\|$)?/gm,function(n,e,r){return l(e||t?"th":"td",g(r))})(n.slice(0,n.length-(t||"").length))}),o,c,/#\[([^\]]+?)]/g,'<a name="$1"></a>',/^(#+) +(.*)(?:$)/gm,function(n,e,r){return l("h"+e.length,g(r))},/^(===+|---+)(?=\s*$)/gm,"<hr>"],p,u)}var i=this,a=function(n){return n?n.replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"):""},o=/(?:(^|\n)([+-]|\d+\.) +(.*(\n[ \t]+.*)*))+/g,g=function c(n,i){var o=[];return n=(n||"").trim().replace(/`([^`]*)`/g,function(n,e){return"\\"+o.push(l("code",a(e)))}).replace(/[!&]?\[([!&]?\[.*?\)|[^\]]*?)]\((.*?)( .*?)?\)|(\w+:\/\/[$\-.+!*'()/,\w]+)/g,function(n,e,r,t,u){return u?i?n:"\\"+o.push(l("a",u,{href:u})):"&"==n[0]?(e=e.match(/^(.+),(.+),([^ \]]+)( ?.+?)?$/),"\\"+o.push(l("iframe","",{width:e[1],height:e[2],frameborder:e[3],class:e[4],src:r,title:t}))):"\\"+o.push("!"==n[0]?l("img","",{src:r,alt:e,title:t}):l("a",c(e,1),{href:r,title:t}))}),n=function r(n){return n.replace(/\\(\d+)/g,function(n,e){return r(o[Number.parseInt(e)-1])})}(i?n:r(n))},r=function t(n){return f(n,[/([*_]{1,3})((.|\n)+?)\1/g,function(n,e,r){return e=e.length,r=t(r),1<e&&(r=l("strong",r)),e%2&&(r=l("em",r)),r},/(~{1,3})((.|\n)+?)\1/g,function(n,e,r){return l([,"u","s","del"][e.length],t(r))},/  \n|\n  /g,"<br>"],t)},f=function(n,e,r,t){for(var u,c=0;c<e.length;){if(u=e[c++].exec(n))return r(n.slice(0,u.index),t)+("string"==typeof e[c]?e[c].replace(/\$(\d)/g,function(n,e){return u[e]}):e[c].apply(i,u))+r(n.slice(u.index+u[0].length),t);c++}return n},p=function(n,e){n=n.replace(/[\r\v\b\f]/g,"").replace(/\\./g,function(n){return"&#"+n.charCodeAt(1)+";"});var r=t(n,e);return r!==n||r.match(/^[\s\n]*$/i)||(r=g(r).replace(/((.|\n)+?)(\n\n+|$)/g,function(n,e){return l("p",e)})),r.replace(/&#(\d+);/g,function(n,e){return String.fromCharCode(parseInt(e))})};return{parse:p,block:t,inline:r,inlineBlock:g}}();"undefined"!=typeof module&&(module.exports=microdown);
-  </script>
-</head>
-<body>
-
-<script>
-  const updateResult = function () {
-    document.getElementById('result').innerHTML = microdown.parse(document.getElementById('input').value, {preCode: true});
-  };
-</script>
-
-
-<div id="result"></div>
-
-<textarea id="input" onkeyup="updateResult()">
-
-""" center
-![micro-down logo](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg)
-
--------------------------
-# micro-down
-=========================
-"""
-
-**1.3kB** JavaScript markdown parser
-  [view on GitHub](https://github.com/shynrou/micro-down)
-
-""" navigation
-[Inline Markup](#inline)
-[Blocks](#blocks)
-[Media](#media)
-[Lists](#lists)
-[Table](#table)
-"""
+- [Inline Formatting](#inline)
+- [Blocks](#blocks)
+- [Media](#media)
+- [Lists](#lists)
+- [Tables](#tables)
 
 #[inline]
-## Inline Markup
+## Inline Formatting
 
-_italic:_ \*italic\* \_italic\_
+_Italic Text_: Use asterisks (\*) or underscores (\_)
 
-__bold:__ `**bold** __bold__`
+**Bold Text**: Use double asterisks (\*\*) or double underscores (\_\_)
 
-___bold italic:___ `***bold italic*** ___bold italic___`
+***Bold and Italic Text***: Use triple asterisks (\*\*\*) or triple underscores (\_\_\_)
 
-```
-code: `code`
-```
+`Inline Code`: Use backticks (\`)
 
-~underline:~ `~underline~`
+~Underlined Text~: Use tildes (\~)
 
-~~strike through:~~ `~~strike through~~`
+~~Strikethrough Text~~: Use double tildes (\~\~)
 
-~~~deleted:~~~ `~~~deleted~~~`
-
+~~~Deleted Text~~~: Use triple tildes (\~\~\~)
 
 #[blocks]
 ## Blocks
 
+**Headers** from h1 to h6 are supported. Use one to six hash marks (\#) at the start of the line.
 
-""" center gray
-Div Blocks are surrounded by """ and can receive a classes.
-"""
-
-``` not_javascript
-Pre
-  formatted
-    blocks
-    can
-    be defined
-  with ``` surrounding them,
-  they can also receive classes.
-  
-	Tabs work here too!
+``` markdown
+# Header h1
+## Header h2
+### Header h3
+#### Header h4
+##### Header h5
+###### Header h6
 ```
 
-> Block quotes can also be handy.
->   They are very nice to get some interresting content
->
 
-> "Blocks in general support _~inline~_ __styles__"
+**Pre-formatted code blocks**: use triple backticks (```). Specify a language for syntax highlighting.
+You can use something like [highlight.js](https://highlightjs.org/) to highlight the code.
+
+``` javascript
+for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
+  console.log('I will stop writing C-style for loops')
+}
+```
+
+**Block Quotes**: Use the greater-than sign (\>)
+
+> This is a block quote. You can _italicize_, **bold**, or ~underline~ text within the quote.
 
 
 #[media]
 ## Media
 ### Links
 ``` markdown
-[github](http://github.com Just a hover text!)
-or simply as URL via auto linking https://github.com/commit-intl/micro-down
+Here's how to create [a link with hover text](http://github.com "Just a hover text!").
 ```
-[github](http://github.com Just a hover text!)
-  or simply as URL via auto linking https://github.com/commit-intl/micro-down
+Auto-linking also works, like this: https://github.com/mlshv/tiny-markdown-parser
 
 ### Images
 ``` markdown
-![github](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg micro-down logo)
+![wiki](https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg Wikipedia Example Image)
 ```
-![github](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg micro-down logo)
+![wiki](https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg Wikipedia Example Image)
 
-combined:
+Image with link:
 ``` markdown
-[![github](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg micro-down logo)](http://github.com Just a hover text!)
+[![wiki](https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg Wikipedia Example Image)](https://en.wikipedia.org/wiki/File:Example.jpg)
 ```
-[![github](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg micro-down logo)](http://github.com Just a hover text!)
-
-### IFrames
-``` markdown
-&[340,170,0 project-card](https://github.com/commit-intl/micro-down)
-```
-&[340,170,0 project-card](https://github.com/commit-intl/micro-down)
+[![wiki](https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg Wikipedia Example Image)](https://en.wikipedia.org/wiki/File:Example.jpg)
 
 #[lists]
-## lists
+## Lists
+Lists can be structured and nested, inline formatting is supported.
 
-1. Lists can be structured and layered
-  1. like this
-  2. for example
-2. __and can also be mixed__
-	- like
-	+ this
-3. _~inline works here to~_
-   and can be quite handy
+1. **Shopping List**
+   - Fruits
+     - Apples
+     - Oranges
+     - _Seasonal_: Strawberries
+   - Vegetables
+     - Carrots
+     - _**Need More!**_: Broccoli
+2. **Errands**
+   - _ASAP_: Post Office
+   - Bank
 
 
-#[table]
-## Table
+#[tables]
+## Tables
 
-|-this   -|-is     -|-a  -
-| really  | useless | table
-| even more | useless | row
+| Item | Quantity | Price |
+|------|----------|-------|
+| Apples | 10 | $2.99 |
+| Oranges | 5 | $3.50 |
+| Broccoli | 2 | $1.75 |
+| Post Office | - | - |
+| Bank | - | - |
 
-| this   | is also    |  quite useless
-|---
-| but images, links and code works here too | ![micro-down logo](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg) | [micro-down logo](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg)
-| fancy you know | `![micro-down logo](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg)` | `[micro-down logo](https://raw.githubusercontent.com/commit-intl/micro-down/master/microdown.svg)`
+Tables can also contain links and images:
 
-</textarea>
+| Description | Image | External Link |
+|-------------|-------|---------------|
+| Example Image | ![Example Image](https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg) | [Go to Image Source](https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg) |
 
-<script>updateResult();</script>
-</body>
+</textarea
+    >
+
+    <script>
+      updateResult();
+    </script>
+  </body>
 </html>

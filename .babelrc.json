@@ -1,8 +1,0 @@
-{
-  "ignore": ["**/*.test.js"],
-  "presets": [
-    ["@babel/preset-env", {
-      "loose": true
-    }]
-  ]
-}
